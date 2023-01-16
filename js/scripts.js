@@ -1,4 +1,4 @@
-var empanadas = [
+const empanadas = [
   "Carne picante (cortada a cuchillo)",
   "Carne suave (cortada a cuchillo)",
   "Carne dulce (con pasas)",
@@ -17,71 +17,67 @@ var empanadas = [
   "Atún",
 ];
 
-var lista_empanadas = document.getElementById("listaEmpanadas");
+let carrito = {};
+let precioEmpanada = 450;
 
-empanadas.map(function (empanada) {
-  var item = document.createElement("li");
-  var cantidad = document.createElement("input");
-  cantidad.style.cssText = "width:40px";
-  var boton = document.createElement("button");
-  var clearButton = document.createElement("button");
-  boton.style.cssText = "background-color: rgb(255, 165, 0);padding:2px";
-  clearButton.style.cssText = "padding:0.5px";
-  boton.innerHTML = "Añadir";
-  clearButton.innerHTML = "Borrar";
-  cantidad.type = "number";
-  cantidad.value = 0;
-  item.innerHTML = empanada;
-  item.appendChild(cantidad);
-  item.appendChild(boton);
-  item.appendChild(clearButton);
-  lista_empanadas.appendChild(item);
-  boton.addEventListener("click", function () {
-    var carrito = {
-      item: empanada,
-      cantidad: cantidad.value,
+const mostrarLista = () => {
+  let lista = document.getElementById("listaEmpanadas");
+  lista.innerHTML = "";
+  empanadas.forEach((empanada) => {
+    let item = document.createElement("li");
+    item.innerHTML = `${empanada} - Cantidad: ${carrito[empanada] || 0}`;
+    let botonAgregar = document.createElement("button");
+    botonAgregar.style.cssText = "margin-left: 10px;background-color:green";
+    botonAgregar.innerHTML = "Añadir";
+    botonAgregar.onclick = () => {
+      if (!carrito[empanada]) {
+        carrito[empanada] = 1;
+      } else {
+        carrito[empanada]++;
+      }
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      console.log("Carrito actualizado:", carrito);
+      mostrarLista();
     };
-    // agregar carrito al carrito de compras
-    var cartData = JSON.parse(localStorage.getItem("cart")) || [];
-    cartData.push(carrito);
-    localStorage.setItem("cart", JSON.stringify(cartData));
-    console.log(cartData);
+    let botonQuitar = document.createElement("button");
+    botonQuitar.style.cssText = "background-color:red";
+    botonQuitar.innerHTML = "Quitar";
+    botonQuitar.onclick = () => {
+      if (carrito[empanada]) {
+        carrito[empanada]--;
+        if (carrito[empanada] === 0) {
+          delete carrito[empanada];
+        }
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        console.log("Carrito actualizado:", carrito);
+        mostrarLista();
+      }
+    };
+    item.appendChild(botonAgregar);
+    item.appendChild(botonQuitar);
+    lista.appendChild(item);
   });
-  clearButton.addEventListener("click", function () {
-    localStorage.removeItem("cart");
-  });
-});
 
-function showCartData() {
-  var cartData = JSON.parse(localStorage.getItem("cart")) || [];
-  console.log(cartData);
-  var table = document.createElement("table");
-  var thead = document.createElement("thead");
-  var tbody = document.createElement("tbody");
-  var headRow = document.createElement("tr");
-  var itemHead = document.createElement("th");
-  var cantidadHead = document.createElement("th");
-  itemHead.innerHTML = "Item";
-  cantidadHead.innerHTML = "Cantidad";
-  headRow.appendChild(itemHead);
-  headRow.appendChild(cantidadHead);
-  thead.appendChild(headRow);
-  table.appendChild(thead);
-
-  cartData.forEach(function (item) {
-    var row = document.createElement("tr");
-    var itemData = document.createElement("td");
-    var cantidadData = document.createElement("td");
-    itemData.innerHTML = item.item;
-    cantidadData.innerHTML = item.cantidad;
-    row.appendChild(itemData);
-    row.appendChild(cantidadData);
-    tbody.appendChild(row);
-  });
-  table.appendChild(tbody);
-  document.body.appendChild(table);
-}
-
-window.onload = function () {
-  showCartData();
+  let carritoListado = document.getElementById("carrito-listado");
+  carritoListado.innerHTML = "";
+  let total = 0;
+  for (let empanada in carrito) {
+    let item = document.createElement("li");
+    let precio = carrito[empanada] * precioEmpanada;
+    total += precio;
+    item.innerHTML = `${empanada} - Cantidad: ${carrito[empanada]} - Precio: $${precio}`;
+    carritoListado.appendChild(item);
+  }
+  document.getElementById("total").innerHTML = `Total: $${total}`;
 };
+
+const cargarCarrito = () => {
+  let carritoGuardado = localStorage.getItem("carrito");
+  if (carritoGuardado) {
+    carrito = JSON.parse(carritoGuardado);
+  }
+  console.log("Carrito cargado:", carrito);
+};
+
+cargarCarrito();
+mostrarLista();

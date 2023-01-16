@@ -68,7 +68,7 @@ main {
 
   ul {
     li {
-      text-align: center;
+      text-align: left;
     }
   }
 
@@ -78,8 +78,7 @@ main {
     margin-bottom: 6px;
   }
 }
-
-footer {
+s footer {
   margin: 2rem;
   @include flex(column, center);
   justify-content: center;
