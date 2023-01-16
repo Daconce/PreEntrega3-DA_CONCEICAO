@@ -69,6 +69,30 @@ const mostrarLista = () => {
     carritoListado.appendChild(item);
   }
   document.getElementById("total").innerHTML = `Total: $${total}`;
+
+  let BotonesContainer = document.getElementById("botones-lista");
+  BotonesContainer.style.cssText = "display:flex;justify-content:center";
+
+  let botonLimpiar = document.getElementById("limpiar-carrito");
+  botonLimpiar.style.cssText =
+    "background-color:orange;padding:3px;font-size:18px;text-align:center;cursor:pointer";
+  botonLimpiar.onclick = () => {
+    carrito = {};
+    localStorage.removeItem("carrito");
+    console.log("Carrito limpiado.");
+    estadoPedido.innerHTML = "";
+    mostrarLista();
+  };
+
+  let estadoPedido = document.getElementById("estado-pedido");
+  estadoPedido.style.cssText =
+    "display:flex;justify-content:center;color:white;font-family:sans-serif";
+  let botonFinalizar = document.getElementById("finalizar-compra");
+  botonFinalizar.style.cssText =
+    "background-color:orange;padding:3px;font-size:18px;text-align:center;cursor:pointer";
+  botonFinalizar.onclick = () => {
+    estadoPedido.innerHTML = "Compra finalizada, ¡gracias por su compra!";
+  };
 };
 
 const cargarCarrito = () => {
